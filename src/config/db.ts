@@ -1,12 +1,13 @@
 import mongoose from 'mongoose';
 
-export const connectDB = async (): Promise<void> => {
+const connectDB = async () => {
   try {
-    const connStr = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/brewtech';
-    await mongoose.connect(connStr);
-    console.log('MongoDB успішно підключено');
-  } catch (error) {
-    console.error('Помилка підключення до БД:', error);
-    process.exit(1);
+    // Вкажи свій URI підключення (локальний або Atlas)
+    const conn = await mongoose.connect(process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/brewtech');
+    console.log(`MongoDB Connected: ${conn.connection.host}`);
+  } catch (error: any) {
+    console.error(`MongoDB Connection Error: ${error.message}`);
   }
 };
+
+export default connectDB;

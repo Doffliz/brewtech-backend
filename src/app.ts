@@ -1,31 +1,25 @@
 import express from 'express';
 import cors from 'cors';
-import dotenv from 'dotenv';
-import { connectDB } from './config/db';
-import menuRouter from './routes/menu';
-import ordersRouter from './routes/orders';
-
-dotenv.config();
+import connectDB from './config/db';
+import menuRoutes from './routes/menu';
+import orderRoutes from './routes/orders';
 
 const app = express();
-const PORT = process.env.PORT || 5000;
 
-// Middleware
+// Підключення до MongoDB
+connectDB();
+
 app.use(cors());
 app.use(express.json());
 
-// Підключення бази даних
-connectDB();
-
-// Маршрути REST API
-app.use('/api/v1/menu', menuRouter);
-app.use('/api/v1/orders', ordersRouter);
-
-// Базовий тестовий ендпоїнт
-app.get('/', (_req, res) => {
+app.get('/', (req, res) => {
   res.send('BrewTech System API is running...');
 });
 
+app.use('/api/v1/menu', menuRoutes);
+app.use('/api/v1/orders', orderRoutes);
+
+const PORT = 5000;
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
