@@ -2,6 +2,7 @@ import { Schema, model, Document } from 'mongoose';
 
 export interface IOrderItem {
   productId: Schema.Types.ObjectId;
+  title?: string;
   milk: string;
   syrup: string;
   quantity: number;
@@ -23,6 +24,7 @@ const orderSchema = new Schema<IOrder>({
   pickupTime: { type: String, required: true },
   items: [{
     productId: { type: Schema.Types.ObjectId, ref: 'Product', required: true },
+    title: { type: String },
     milk: { type: String, default: 'Стандартне' },
     syrup: { type: String, default: 'Без сиропу' },
     quantity: { type: Number, required: true, min: 1 }

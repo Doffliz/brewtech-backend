@@ -2,7 +2,7 @@ import { Order } from '../models/Order';
 
 export class OrderService {
   static async getAllOrders() {
-    return await Order.find().populate('items');
+    return await Order.find().populate('items.productId');
   }
 
   static async createOrder(data: any) {
