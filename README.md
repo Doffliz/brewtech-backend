@@ -12,3 +12,8 @@
    ```bash
    git clone https://github.com/Doffliz/brewtech-backend
    cd brewtech-backend
+
+2. Запуск проєкту:
+   ```bash
+   npm run dev
+   
