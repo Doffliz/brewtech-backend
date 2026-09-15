@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Панель Баріста — BrewTech</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
+        body { background: #121212; color: #fff; padding: 24px; }
+        h1 { margin-bottom: 24px; color: #d4af37; }
+        .orders-grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+        .order-card { background: #1a1a1a; border: 1px solid #333; border-radius: 10px; padding: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+        .order-header { display: flex; justify-content: space-between; margin-bottom: 12px; font-weight: bold; border-bottom: 1px solid #333; padding-bottom: 8px; }
+        .order-details p { margin-bottom: 6px; color: #ccc; font-size: 14px; }
+        .items-list { margin: 10px 0; padding-left: 16px; font-size: 13px; color: #aaa; }
+        .status-btn { background: #d4af37; color: #000; border: none; padding: 8px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; transition: background 0.2s; }
+        .status-btn:hover { background: #c29b2e; }
+        .status-completed { color: #4caf50; font-weight: bold; }
+        .empty { color: #888; text-align: center; grid-column: 1 / -1; margin-top: 40px; }
+    </style>
+</head>
+<body>
+
+    <h1>Панель Баріста (Замовлення)</h1>
+    <div id="orders-container" class="orders-grid">
+        <p class="empty">Завантаження замовлень...</p>
+    </div>
+
+    <script>
+        async function fetchOrders() {
+            try {
+                const res = await fetch('/api/v1/orders');
+                const data = await res.json();
+                const orders = Array.isArray(data) ? data : (data.orders || data.data || []);
+                renderOrders(orders);
+            } catch (err) {
+                console.error('Помилка завантаження замовлень:', err);
+                document.getElementById('orders-container').innerHTML = '<p class="empty">Помилка завантаження з сервера.</p>';
+            }
+        }
+
+        async function updateStatus(orderId, currentStatus) {
+            
+            const newStatus = currentStatus === 'completed' ? 'pending' : 'completed';
+            try {
+                const res = await fetch(`/api/v1/orders/${orderId}/status`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: newStatus })
+                });
+                if (res.ok) {
+                    fetchOrders();
+                } else {
+                    alert('Не вдалося оновити статус');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Помилка мережі');
+            }
+        }
+
+        function renderOrders(orders) {
+            const container = document.getElementById('orders-container');
+            if (!orders.length) {
+                container.innerHTML = '<p class="empty">Немає активних замовлень.</p>';
+                return;
+            }
+
+            container.innerHTML = orders.map(order => {
+                const id = order._id || order.id;
+                const name = order.customerName || 'Гість';
+                const phone = order.phone || 'Не вказано';
+                const time = order.pickupTime || 'Якнайшвидше';
+                const total = order.totalPrice || 0;
+                const status = order.status || 'pending';
+                
+                const itemsHtml = (order.items || []).map(i => {
+                    
+                    const title = i.productId?.title || i.title || 'Товар';
+                    return `<li>${title} (х${i.quantity})</li>`;
+                }).join('');
+
+                return `
+                    <div class="order-card">
+                        <div class="order-header">
+                            <span>Клієнт: ${name}</span>
+                            <span>${total} ₴</span>
+                        </div>
+                        <div class="order-details">
+                            <p><strong>Телефон:</strong> ${phone}</p>
+                            <p><strong>Час видачі:</strong> ${time}</p>
+                            <p><strong>Статус:</strong> <span class="${status === 'completed' ? 'status-completed' : ''}">${status}</span></p>
+                            <p><strong>Товари:</strong></p>
+                            <ul class="items-list">${itemsHtml}</ul>
+                        </div>
+                        <button class="status-btn" onclick="updateStatus('${id}', '${status}')">
+                            ${status === 'completed' ? 'Позначити як активне' : 'Виконано / Завершити'}
+                        </button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+       
+        fetchOrders();
+        setInterval(fetchOrders, 5000);
+    </script>
+</body>
+</html>
