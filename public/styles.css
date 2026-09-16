@@ -187,7 +187,7 @@ body {
 
 #open-login:hover, #open-register:hover {
     background: #252525;
-    color: #d4af37; /* Золотавий акцент */
+    color: #d4af37; 
     border-color: #d4af37;
 }
 
