@@ -6,7 +6,7 @@
 
 1. Клонуйте репозиторій:
    
-   git clone [https://github.com/Doffliz/brewtech-backend.git](https://github.com/Doffliz/brewtech-backend.git)
+   '''git clone [https://github.com/Doffliz/brewtech-backend.git](https://github.com/Doffliz/brewtech-backend.git)'''
 
    Встановіть залежності та налаштуйте змінні середовища (.env).
 
