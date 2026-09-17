@@ -1,9 +1,3 @@
-
-const SUPABASE_URL = 'https://mdnxksiduzkxotbuykgz.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1kbnhrc2lkdXpreG90YnV5a2d6InVyb2xlIjoiYW5vbiIsImlhdCI6MTc4OTUzNDYxOSwiZXhwIjoyMTA1MTEwNjE5fQ.u-WzrI78Os4yx0yLRufpAI9pFR5Jhlb7I5ime1cXGIQ';
-
-const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
 let cart = [];
 let menuItems = [];
 
@@ -14,10 +8,6 @@ document.addEventListener('DOMContentLoaded', () => {
     setupEventListeners();
     setupAuth();
     ensureNotificationModalExists();
-    handleAuthUI();
-});
-
-supabaseClient.auth.onAuthStateChange(() => {
     handleAuthUI();
 });
 
@@ -56,58 +46,10 @@ function renderMenu() {
         const price = item.basePrice ?? item.price ?? item.cost ?? 0;
         const name = item.title ?? item.name ?? 'Без назви';
         const id = item._id ?? item.id;
-        
-        const lowerName = name.toLowerCase();
 
         let defaultDesc = 'Класичний кавовий напій';
-        if (lowerName.includes('еспресо') || lowerName.includes('espresso')) {
-            defaultDesc = 'Міцний чорний кавовий напій з насиченим смаком';
-        } else if (lowerName.includes('допіо') || lowerName.includes('dopio')) {
-            defaultDesc = 'Подвійна порція класичного еспресо';
-        } else if (lowerName.includes('капучино') || lowerName.includes('cappuccino')) {
-            defaultDesc = 'Еспресо з додаванням ніжної молочної піни';
-        } else if (lowerName.includes('латте') || lowerName.includes('latte')) {
-            defaultDesc = "М'який напій на основі еспресо та великої кількості молока";
-        } else if (lowerName.includes('американо') || lowerName.includes('americano')) {
-            defaultDesc = 'Еспресо, розбавлене гарячою водою';
-        } else if (lowerName.includes('флет уайт') || lowerName.includes('flat white')) {
-            defaultDesc = 'Подвійна порція еспресо з шаром шовковистого молока';
-        } else if (lowerName.includes('раф') || lowerName.includes('raf')) {
-            defaultDesc = 'Кавовий напій з вершками та ванільним цукром';
-        } else if (lowerName.includes('матча') || lowerName.includes('matcha')) {
-            defaultDesc = 'Зелений японський чай з додаванням збитого молока';
-        } else if (lowerName.includes('какао') || lowerName.includes('chocolate')) {
-            defaultDesc = 'Гарячий шоколадний напій з насиченим смаком какао';
-        } else if (lowerName.includes('апельсин') || lowerName.includes('джміль') || lowerName.includes('bumblebee')) {
-            defaultDesc = 'Освіжаючий шар-коктейль з апельсиновим соком, карамеллю та подвійним еспресо';
-        }
-
         const desc = item.description || defaultDesc;
-
-        let defaultImage = 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=500&q=80';
-        if (lowerName.includes('еспресо') || lowerName.includes('espresso')) {
-            defaultImage = 'https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?auto=format&fit=crop&w=500&q=80';
-        } else if (lowerName.includes('допіо')) {
-            defaultImage = 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=500&q=80';
-        } else if (lowerName.includes('капучино') || lowerName.includes('cappuccino')) {
-            defaultImage = 'https://images.unsplash.com/photo-1534778101976-62847782c213?auto=format&fit=crop&w=500&q=80';
-        } else if (lowerName.includes('латте') || lowerName.includes('latte')) {
-            defaultImage = 'https://images.unsplash.com/photo-1570968915860-54d5c301fa9f?auto=format&fit=crop&w=500&q=80';
-        } else if (lowerName.includes('американо') || lowerName.includes('americano')) {
-            defaultImage = 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=500&q=80';
-        } else if (lowerName.includes('флет уайт')) {
-            defaultImage = 'https://images.unsplash.com/photo-1577968897966-3d4325b36b61?auto=format&fit=crop&w=500&q=80';
-        } else if (lowerName.includes('раф') || lowerName.includes('raf')) {
-            defaultImage = 'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?auto=format&fit=crop&w=500&q=80';
-        } else if (lowerName.includes('матча') || lowerName.includes('matcha')) {
-            defaultImage = 'https://images.unsplash.com/photo-1536256263959-770b48d82b0a?auto=format&fit=crop&w=500&q=80';
-        } else if (lowerName.includes('какао') || lowerName.includes('chocolate')) {
-            defaultImage = 'https://images.unsplash.com/photo-1542990253-0d0f5be5f0ed?auto=format&fit=crop&w=500&q=80';
-        } else if (lowerName.includes('апельсин') || lowerName.includes('джміль')) {
-            defaultImage = 'https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?auto=format&fit=crop&w=500&q=80';
-        }
-
-        const imageUrl = item.imageUrl ?? item.image ?? defaultImage;
+        const imageUrl = item.imageUrl ?? item.image ?? 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=500&q=80';
 
         return `
             <div class="menu-card" style="background: #1a1a1a; border: 1px solid #333; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between;">
@@ -253,7 +195,13 @@ async function loadUserOrders() {
     listContainer.innerHTML = '<p style="color: #888;">Завантаження...</p>';
 
     try {
-        const res = await fetch('/api/v1/orders');
+        const userEmail = localStorage.getItem('userEmail');
+        if (!userEmail) {
+            listContainer.innerHTML = '<p style="color: #e74c3c;">Будь ласка, увійдіть у систему.</p>';
+            return;
+        }
+
+        const res = await fetch(`/api/v1/orders?email=${encodeURIComponent(userEmail)}`);
         if (!res.ok) throw new Error('Не вдалося завантажити замовлення');
         
         const data = await res.json();
@@ -315,6 +263,8 @@ function setupEventListeners() {
                 return;
             }
 
+            const userEmail = localStorage.getItem('userEmail');
+
             const totalPrice = cart.reduce((sum, i) => {
                 const price = i.resolvedPrice ?? i.basePrice ?? i.price ?? 0;
                 return sum + (price * i.quantity);
@@ -325,6 +275,7 @@ function setupEventListeners() {
                 phone: document.getElementById('phone').value,
                 pickupTime: document.getElementById('pickupTime').value,
                 totalPrice: totalPrice,
+                email: userEmail || undefined, 
                 items: cart.map(i => ({ productId: i._id || i.id, quantity: i.quantity }))
             };
 
@@ -375,14 +326,23 @@ function setupAuth() {
             const email = document.getElementById('register-email').value;
             const password = document.getElementById('register-password').value;
 
-            const { error } = await supabaseClient.auth.signUp({ email, password });
-            
-            if (error) {
-                showCustomMessage('Помилка реєстрації: ' + error.message, 'Помилка');
-            } else {
-                showCustomMessage('Реєстрація успішна! Увійдіть у систему.', 'Успіх');
-                registerModal?.classList.add('hidden');
-                registerForm.reset();
+            try {
+                const res = await fetch('/api/v1/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await res.json();
+
+                if (res.ok) {
+                    showCustomMessage('Реєстрація успішна! Увійдіть у систему.', 'Успіх');
+                    registerModal?.classList.add('hidden');
+                    registerForm.reset();
+                } else {
+                    showCustomMessage('Помилка реєстрації: ' + (data.error || 'Невідома помилка'), 'Помилка');
+                }
+            } catch (err) {
+                showCustomMessage('Помилка мережі', 'Помилка');
             }
         });
     }
@@ -394,27 +354,37 @@ function setupAuth() {
             const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-password').value;
 
-            const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
-            
-            if (error) {
-                showCustomMessage('Помилка входу: ' + error.message, 'Помилка');
-            } else {
-                showCustomMessage('Ви успішно увійшли в систему!', 'Успіх');
-                loginModal?.classList.add('hidden');
-                loginForm.reset();
-                handleAuthUI();
+            try {
+                const res = await fetch('/api/v1/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await res.json();
+
+                if (res.ok) {
+                    localStorage.setItem('userEmail', data.email);
+                    showCustomMessage('Ви успішно увійшли в систему!', 'Успіх');
+                    loginModal?.classList.add('hidden');
+                    loginForm.reset();
+                    handleAuthUI();
+                } else {
+                    showCustomMessage('Помилка входу: ' + (data.error || 'Невідома помилка'), 'Помилка');
+                }
+            } catch (err) {
+                showCustomMessage('Помилка мережі', 'Помилка');
             }
         });
     }
 }
 
-async function handleAuthUI() {
-    const { data: { session } } = await supabaseClient.auth.getSession();
+function handleAuthUI() {
+    const userEmail = localStorage.getItem('userEmail');
     
     const loginBtn = document.getElementById('open-login');
     const registerBtn = document.getElementById('open-register');
 
-    if (session && session.user) {
+    if (userEmail) {
         if (loginBtn) loginBtn.style.display = 'none';
         if (registerBtn) registerBtn.style.display = 'none';
 
@@ -437,7 +407,7 @@ async function handleAuthUI() {
 
         document.getElementById('open-profile-modal')?.addEventListener('click', () => {
             const emailText = document.getElementById('profile-email-text');
-            if (emailText) emailText.innerText = session.user.email;
+            if (emailText) emailText.innerText = userEmail;
             
             const profileModal = document.getElementById('profile-modal');
             if (profileModal) {
@@ -447,8 +417,8 @@ async function handleAuthUI() {
             }
         });
 
-        document.getElementById('logout-btn')?.addEventListener('click', async () => {
-            await supabaseClient.auth.signOut();
+        document.getElementById('logout-btn')?.addEventListener('click', () => {
+            localStorage.removeItem('userEmail');
             userProfileContainer.remove();
             if (loginBtn) loginBtn.style.display = '';
             if (registerBtn) registerBtn.style.display = '';
@@ -461,7 +431,7 @@ function ensureNotificationModalExists() {
     if (document.getElementById('custom-notification-modal')) return;
 
     const modalHTML = `
-        <div id="custom-notification-modal" class="hidden" style="position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(4px);">
+        <div id="custom-notification-modal" class="hidden" style="position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(4px);">
             <div style="background: #1a1a1a; border: 1px solid #333; padding: 24px; border-radius: 12px; max-width: 400px; width: 90%; text-align: center; color: #fff; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
                 <h3 id="custom-notification-title" style="margin-bottom: 12px; font-size: 20px; color: #d4af37;">Повідомлення</h3>
                 <p id="custom-notification-text" style="margin-bottom: 20px; color: #ccc; line-height: 1.5;"></p>
@@ -472,13 +442,17 @@ function ensureNotificationModalExists() {
     document.body.insertAdjacentHTML('beforeend', modalHTML);
 
     document.getElementById('custom-notification-btn').addEventListener('click', () => {
-        document.getElementById('custom-notification-modal').classList.add('hidden');
+        const modal = document.getElementById('custom-notification-modal');
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
     });
 }
 
 function showCustomMessage(text, title = 'Повідомлення') {
     ensureNotificationModalExists();
+    const modal = document.getElementById('custom-notification-modal');
     document.getElementById('custom-notification-title').innerText = title;
     document.getElementById('custom-notification-text').innerText = text;
-    document.getElementById('custom-notification-modal').classList.remove('hidden');
+    modal.classList.remove('hidden');
+    modal.style.display = 'flex';
 }
