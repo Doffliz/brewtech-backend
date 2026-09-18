@@ -5,52 +5,48 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BrewTech</title>
     <link rel="stylesheet" href="styles.css">
-    
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
-    <header class="site-header">
-        <h1>BrewTech</h1>
-        <div class="header-buttons">
-            <button id="open-login" class="btn-secondary">Увійти</button>
-            <button id="open-register" class="btn-primary">Реєстрація</button>
-            <button id="open-cart" class="btn-cart">Кошик <span id="cart-count">0</span></button>
-        </div>
-    </header>
-
-    <main>
-        <section id="menu-container" class="menu-grid">
-          
-        </section>
-    </main>
-
-    
-    <div id="login-modal" class="modal hidden">
-        <div class="modal-content">
-            <span class="close-btn" id="close-login">&times;</span>
-            <h2>Вхід</h2>
-            <form id="login-form">
-                <input type="email" id="login-email" placeholder="Email" required>
-                <input type="password" id="login-password" placeholder="Пароль" required>
-                <button type="submit" class="add-to-cart-btn">Увійти</button>
-            </form>
-        </div>
+<header class="site-header">
+    <h1>BrewTech</h1>
+    <div class="header-buttons">
+        <button id="open-login" class="btn-secondary">Увійти</button>
+        <button id="open-register" class="btn-primary">Реєстрація</button>
+        <button id="open-cart" class="btn-cart">Кошик <span id="cart-count">0</span></button>
     </div>
+</header>
 
-    
-    <div id="register-modal" class="modal hidden">
-        <div class="modal-content">
-            <span class="close-btn" id="close-register">&times;</span>
-            <h2>Реєстрація</h2>
-            <form id="register-form">
-                <input type="email" id="register-email" placeholder="Email" required>
-                <input type="password" id="register-password" placeholder="Пароль" required>
-                <button type="submit" class="add-to-cart-btn">Зареєструватися</button>
-            </form>
-        </div>
+<main>
+    <section id="menu-container" class="menu-grid">
+        
+    </section>
+</main>
+
+<div id="login-modal" class="modal hidden">
+    <div class="modal-content">
+        <span class="close-btn" id="close-login">&times;</span>
+        <h2>Увійти</h2>
+        <form id="login-form">
+            <input type="email" id="login-email" placeholder="Email" required>
+            <input type="password" id="login-password" placeholder="Пароль" required>
+            <button type="submit" class="add-to-cart-btn">Увійти</button>
+        </form>
     </div>
+</div>
 
-    <script src="app.js"></script>
+<div id="register-modal" class="modal hidden">
+    <div class="modal-content">
+        <span class="close-btn" id="close-register">&times;</span>
+        <h2>Реєстрація</h2>
+        <form id="register-form">
+            <input type="email" id="register-email" placeholder="Email" required>
+            <input type="password" id="register-password" placeholder="Пароль" required>
+            <button type="submit" class="add-to-cart-btn">Зареєструватися</button>
+        </form>
+    </div>
+</div>
+
+<script src="app.js"></script>
 </body>
 </html>

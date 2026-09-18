@@ -11,21 +11,36 @@ document.addEventListener('DOMContentLoaded', () => {
     handleAuthUI();
 });
 
-async function fetchMenu() {
+
+async function fetchMenu(category = 'all', buttonElement = null) {
+    if (buttonElement) {
+        document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+        buttonElement.classList.add('active');
+    }
+
     try {
-        const res = await fetch('/api/v1/menu');
-        const data = await res.json();
-        
-        menuItems = Array.isArray(data) ? data : (data.items || data.data || []);
-        renderMenu();
+        if (!menuItems.length) {
+            const res = await fetch('/api/v1/menu');
+            const data = await res.json();
+            menuItems = Array.isArray(data) ? data : (data.items || data.data || []);
+        }
+        renderMenu(category);
     } catch (err) {
         console.error('Помилка завантаження меню:', err);
     }
 }
 
-function renderMenu() {
+
+function filterProducts(category, buttonElement) {
+    fetchMenu(category, buttonElement);
+}
+
+function renderMenu(filterCategory = 'all') {
     const container = document.getElementById('menu-container');
     if (!container) return;
+
+    
+    console.log("Всі товари та їх категорії:", menuItems.map(i => ({ name: i.title || i.name, category: i.category })));
 
     const cafeDescriptionHTML = `
         <div class="cafe-about-banner" style="grid-column: 1 / -1; background: #1f1f1f; border: 1px solid #333; border-radius: 12px; padding: 24px; margin-bottom: 20px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
@@ -35,24 +50,49 @@ function renderMenu() {
                 Обирайте улюблений напій, замовляйте онлайн із самовивозом та насолоджуйтесь справжнім смаком разом із нами!
             </p>
         </div>
+
+        <!-- Кнопки фільтрації категорій -->
+        <div class="category-filters" style="grid-column: 1 / -1; display: flex; justify-content: center; gap: 10px; margin-bottom: 20px;">
+            <button class="filter-btn ${filterCategory === 'all' ? 'active' : ''}" onclick="filterProducts('all', this)" style="background: ${filterCategory === 'all' ? '#d4af37' : '#1a1a1a'}; color: ${filterCategory === 'all' ? '#000' : '#fff'}; border: 1px solid #333; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 15px; font-weight: ${filterCategory === 'all' ? 'bold' : 'normal'};">Усі</button>
+            <button class="filter-btn ${filterCategory === 'coffee' ? 'active' : ''}" onclick="filterProducts('coffee', this)" style="background: ${filterCategory === 'coffee' ? '#d4af37' : '#1a1a1a'}; color: ${filterCategory === 'coffee' ? '#000' : '#fff'}; border: 1px solid #333; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 15px; font-weight: ${filterCategory === 'coffee' ? 'bold' : 'normal'};">Кава</button>
+            <button class="filter-btn ${filterCategory === 'tea' ? 'active' : ''}" onclick="filterProducts('tea', this)" style="background: ${filterCategory === 'tea' ? '#d4af37' : '#1a1a1a'}; color: ${filterCategory === 'tea' ? '#000' : '#fff'}; border: 1px solid #333; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 15px; font-weight: ${filterCategory === 'tea' ? 'bold' : 'normal'};">Чай</button>
+            <button class="filter-btn ${filterCategory === 'desserts' ? 'active' : ''}" onclick="filterProducts('desserts', this)" style="background: ${filterCategory === 'desserts' ? '#d4af37' : '#1a1a1a'}; color: ${filterCategory === 'desserts' ? '#000' : '#fff'}; border: 1px solid #333; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 15px; font-weight: ${filterCategory === 'desserts' ? 'bold' : 'normal'};">Десерти</button>
+        </div>
     `;
 
-    if (!menuItems.length) {
-        container.innerHTML = cafeDescriptionHTML + '<p style="color: #a0a0a0; grid-column: 1 / -1; text-align: center;">Меню наразі порожнє або бекенд не віддав дані.</p>';
+    
+    const filteredItems = menuItems.filter(item => {
+        if (filterCategory === 'all') return true;
+        
+        const itemCat = (item.category || '').toLowerCase();
+        
+        if (filterCategory === 'coffee') {
+            return itemCat.includes('coffee') || itemCat.includes('кав') || itemCat.includes('кофе');
+        }
+        if (filterCategory === 'tea') {
+            return itemCat.includes('tea') || itemCat.includes('чай');
+        }
+        if (filterCategory === 'desserts') {
+            return itemCat.includes('dessert') || itemCat.includes('десерт') || itemCat.includes('солод');
+        }
+        
+        return itemCat.includes(filterCategory);
+    });
+
+    if (!filteredItems.length) {
+        container.innerHTML = cafeDescriptionHTML + '<p style="color: #a0a0a0; grid-column: 1 / -1; text-align: center;">У цій категорії поки немає товарів.</p>';
         return;
     }
 
-    const cardsHTML = menuItems.map(item => {
+    const cardsHTML = filteredItems.map(item => {
         const price = item.basePrice ?? item.price ?? item.cost ?? 0;
         const name = item.title ?? item.name ?? 'Без назви';
         const id = item._id ?? item.id;
-
-        let defaultDesc = 'Класичний кавовий напій';
-        const desc = item.description || defaultDesc;
+        const desc = item.description || 'Класичний кавовий напій';
         const imageUrl = item.imageUrl ?? item.image ?? 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=500&q=80';
 
         return `
-            <div class="menu-card" style="background: #1a1a1a; border: 1px solid #333; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between;">
+            <div class="menu-card product-card" style="background: #1a1a1a; border: 1px solid #333; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between;">
                 <div style="height: 140px; overflow: hidden; background: #222;">
                     <img src="${imageUrl}" alt="${name}" style="width: 100%; height: 100%; object-fit: cover;">
                 </div>
